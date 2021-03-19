@@ -4,13 +4,15 @@ import matplotlib.pyplot as plt
 import numpy as np
 
 # Import data
-df = None
+df = pd.read_csv('medical_examination.csv')
 
 # Add 'overweight' column
-df['overweight'] = None
+bmi = df['weight'] / (df['height'] / 100) ** 2
+df['overweight'] = bmi > 25
 
 # Normalize data by making 0 always good and 1 always bad. If the value of 'cholestorol' or 'gluc' is 1, make the value 0. If the value is more than 1, make the value 1.
-
+df['cholestorol'].replace([1, 2, 3], [0, 1, 1], inplace=True)
+df['gluc'].replace([1, 2, 3], [0, 1, 1], inplace=True)
 
 # Draw Categorical Plot
 def draw_cat_plot():
