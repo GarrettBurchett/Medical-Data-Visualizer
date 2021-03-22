@@ -11,7 +11,7 @@ bmi = df['weight'] / (df['height'] / 100) ** 2
 df['overweight'] = bmi > 25
 
 # Normalize data by making 0 always good and 1 always bad. If the value of 'cholestorol' or 'gluc' is 1, make the value 0. If the value is more than 1, make the value 1.
-df['cholestorol'].replace([1, 2, 3], [0, 1, 1], inplace=True)
+df['cholesterol'].replace([1, 2, 3], [0, 1, 1], inplace=True)
 df['gluc'].replace([1, 2, 3], [0, 1, 1], inplace=True)
 
 # Draw Categorical Plot
@@ -24,7 +24,7 @@ def draw_cat_plot():
     df_cat = df_cat.groupby(['cardio', 'variable', 'value'], as_index=False).count()
 
     # Draw the catplot with 'sns.catplot()'
-    fig = sns.catplot(x='variable', y='total', data=df_cat, hue='value', col='cardio', kind='bar')
+    fig = sns.catplot(x='variable', y='total', data=df_cat, hue='value', col='cardio', kind='bar').fig
 
 
     # Do not modify the next two lines
@@ -35,22 +35,25 @@ def draw_cat_plot():
 # Draw Heat Map
 def draw_heat_map():
     # Clean the data
-    df_heat = None
+    df_heat = df[
+             (df['ap_lo'] <= df['ap_hi'])
+             & (df['height'] <= df['height'].quantile(0.975))
+             & (df['height'] >= df['height'].quantile(0.025))
+             & (df['weight'] <= df['weight'].quantile(0.975))
+             & (df['weight'] >= df['weight'].quantile(0.025))
+    ]
 
     # Calculate the correlation matrix
-    corr = None
+    corr = df_heat.corr()
 
     # Generate a mask for the upper triangle
-    mask = None
-
-
+    mask = np.triu(np.ones_like(corr, dtype=np.bool))
 
     # Set up the matplotlib figure
-    fig, ax = None
+    fig, ax = plt.subplots()
 
     # Draw the heatmap with 'sns.heatmap()'
-
-
+    sns.heatmap(corr, mask=mask, fmt=".1f", annot=True)
 
     # Do not modify the next two lines
     fig.savefig('heatmap.png')
